@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Service</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>Weather Service</h1>
+        <div class="search-box">
+            <input type="text" id="city" placeholder="Enter city name" />
+            <button id="search">Search</button>
+        </div>
+        <div id="map" style="height: 500px;"></div>
+        <div class="weather-info">
+            <h2 id="weather-result"></h2>
+            <h3 id="thermal-info"></h3>
+            <h4 id="time-info"></h4>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</body>
+</html>

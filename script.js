@@ -1,14 +1,12 @@
 // Initialize the map
-const map = L.map('map').setView([-30.5595, 22.9375], 5); // Default to South Africa
+const map = L.map('map').setView([-30.5595, 22.9375], 5);
 
-// Add OpenStreetMap tiles
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
 }).addTo(map);
 
-// Fetch weather data by city name
 function fetchWeather(city) {
-    const apiKey = '573e97ac399f571c455565a1a2fd1196'; // Replace with your OpenWeatherMap API key
+    const apiKey = '2ca544c2d10b077fb32ed89ebef766cd';
     fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city},ZA&appid=${apiKey}&units=metric`)
         .then(response => response.json())
         .then(data => {
@@ -21,7 +19,7 @@ function fetchWeather(city) {
                 document.getElementById('thermal-info').textContent = `Thermal info: ${temperature}°C`;
                 document.getElementById('time-info').textContent = `Time: ${time}`;
 
-                // Clear previous markers
+               
                 map.eachLayer(layer => {
                     if (layer instanceof L.Marker) {
                         map.removeLayer(layer);
@@ -42,7 +40,7 @@ function fetchWeather(city) {
         });
 }
 
-// Event listener for the search button
+
 document.getElementById('search').addEventListener('click', function () {
     const city = document.getElementById('city').value;
     if (city) {
@@ -52,20 +50,13 @@ document.getElementById('search').addEventListener('click', function () {
     }
 });
 
-// Get the user's current location and update the map
 function getCurrentLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
-
-            // Center the map on the user's location
             map.setView([lat, lon], 10);
-
-            // Add marker for the current location
             L.marker([lat, lon]).addTo(map).bindPopup("You are here").openPopup();
-
-            // Fetch weather for current location
             const apiKey = 'your_actual_api_key_here';
             fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`)
                 .then(response => response.json())
@@ -85,6 +76,4 @@ function getCurrentLocation() {
         document.getElementById('weather-result').textContent = 'Geolocation is not supported by your browser.';
     }
 }
-
-// Automatically get the current location when the page loads
 window.onload = getCurrentLocation;

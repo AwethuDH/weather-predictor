@@ -1,28 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather Service</title>
+    <title>Weather Predictor</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
-    <div class="container">
-        <h1>Weather Service</h1>
-        <div class="search-box">
-            <input type="text" id="city" placeholder="Enter city name" />
-            <button id="search">Search</button>
-        </div>
-        <div id="map" style="height: 500px;"></div>
-        <div class="weather-info">
-            <h2 id="weather-result"></h2>
-            <h3 id="thermal-info"></h3>
-            <h4 id="time-info"></h4>
+    <div class="app-container">
+        <div class="weather-card">
+            <div class="app-header">
+                <h1 class="app-title">
+                    <i class="fas fa-bolt"></i>
+                    Weather Predictor
+                </h1>
+                <p class="app-subtitle">Advanced forecasting with radar, alerts, and AI recommendations</p>
+
+                <div class="theme-selector">
+                    <div class="theme-buttons">
+                        <span class="theme-label">Choose Theme:</span>
+                        <button class="theme-btn active" data-theme="dark" title="Dark Theme">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                        <button class="theme-btn" data-theme="light" title="Light Theme">
+                            <i class="fas fa-sun"></i>
+                        </button>
+                        <button class="theme-btn" data-theme="blue" title="Ocean Blue">
+                            <i class="fas fa-water"></i>
+                        </button>
+                        <button class="theme-btn" data-theme="nature" title="Nature Green">
+                            <i class="fas fa-leaf"></i>
+                        </button>
+                        <button class="theme-btn" data-theme="sunset" title="Sunset Orange">
+                            <i class="fas fa-sunset"></i>
+                        </button>
+                        <button class="theme-btn" data-theme="purple" title="Purple Dream">
+                            <i class="fas fa-cloud-moon"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="search-section">
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="city" placeholder="Enter city name or say it..." class="search-input" />
+                        <button id="voice-search" class="voice-btn" title="Voice Search">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <button id="search" class="search-btn">
+                            <i class="fas fa-search-location"></i>
+                            Search
+                        </button>
+                    </div>
+                    <button id="current-location" class="location-btn">
+                        <i class="fas fa-location-crosshairs"></i>
+                        Current Location
+                    </button>
+                    <button id="share-weather" class="share-btn">
+                        <i class="fas fa-share-alt"></i>
+                        Share
+                    </button>
+                </div>
+                <div class="favorites-bar">
+                    <span class="favorites-label">Quick Access:</span>
+                    <div id="favorites-list" class="favorites-list">
+                        <button class="favorite-btn" data-city="Johannesburg">Johannesburg</button>
+                        <button class="favorite-btn" data-city="Port Elizabeth">Gqeberha</button>
+                        <button class="favorite-btn" data-city="Durban">Durban</button>
+                        <button class="favorite-btn" data-city="Cape Town">Cape Town</button>
+                        <button id="add-favorite" class="favorite-add-btn" title="Add Current to Favorites">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="alert-section" class="alert-section hidden">
+                <div class="alert-header">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span id="alert-title">Weather Alert</span>
+                    <button id="close-alert" class="close-alert"><i class="fas fa-times"></i></button>
+                </div>
+                <div id="alert-content" class="alert-content"></div>
+            </div>
+            <div class="main-content">                <div class="map-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-map"></i> Interactive Weather Map</h3>
+                        <div class="map-controls">
+                            <div class="map-layers">
+                                <button id="layer-standard" class="layer-btn active">Standard</button>
+                                <button id="layer-precipitation" class="layer-btn">Rain</button>
+                                <button id="layer-clouds" class="layer-btn">Clouds</button>
+                                <button id="layer-temperature" class="layer-btn">Temp</button>
+                            </div>
+                            <div class="map-zoom">
+                                <button id="zoom-in" class="map-btn"><i class="fas fa-plus"></i></button>
+                                <button id="zoom-out" class="map-btn"><i class="fas fa-minus"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="map"></div>
+                </div>
+
+                <div class="weather-section">
+                    <div class="weather-display">
+                        <div class="current-weather">
+                            <div class="weather-icon" id="weather-icon">
+                                <i class="fas fa-sun"></i>
+                            </div>
+                            <div class="temperature" id="temperature">--°C</div>
+                            <div class="weather-description" id="weather-description">Search for a city</div>
+                            <div class="location" id="location">--</div>
+                        </div>
+
+                        <div class="recommendation-card">
+                            <div class="recommendation-header">
+                                <i class="fas fa-robot"></i>
+                                <span>AI Suggestions</span>
+                            </div>
+                            <div id="recommendations" class="recommendation-content">
+                                What should you do today? Search for weather to find out!
+                            </div>
+                        </div>
+
+                        <div class="weather-details">
+                            <div class="detail-card">
+                                <i class="fas fa-temperature-high"></i>
+                                <div class="detail-info">
+                                    <span class="detail-label">Feels Like</span>
+                                    <span class="detail-value" id="feels-like">--°C</span>
+                                </div>
+                            </div>
+                            <div class="detail-card">
+                                <i class="fas fa-tint"></i>
+                                <div class="detail-info">
+                                    <span class="detail-label">Humidity</span>
+                                    <span class="detail-value" id="humidity">--%</span>
+                                </div>
+                            </div>
+                            <div class="detail-card">
+                                <i class="fas fa-wind"></i>
+                                <div class="detail-info">
+                                    <span class="detail-label">Wind Speed</span>
+                                    <span class="detail-value" id="wind-speed">-- km/h</span>
+                                </div>
+                            </div>
+                            <div class="detail-card">
+                                <i class="fas fa-gauge-high"></i>
+                                <div class="detail-info">
+                                    <span class="detail-label">Pressure</span>
+                                    <span class="detail-value" id="pressure">-- hPa</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="air-quality-card">
+                            <div class="air-quality-header">
+                                <i class="fas fa-wind"></i>
+                                <span>Air Quality Index (South Africa)</span>
+                                <div id="aqi-value" class="aqi-badge">--</div>
+                            </div>
+                            <div class="air-quality-details">
+                                <div class="aqi-detail">
+                                    <span>PM2.5</span>
+                                    <span id="pm25">-- μg/m³</span>
+                                </div>
+                                <div class="aqi-detail">
+                                    <span>PM10</span>
+                                    <span id="pm10">-- μg/m³</span>
+                                </div>
+                                <div class="aqi-detail">
+                                    <span>O₃</span>
+                                    <span id="o3">-- ppb</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="time-section">
+                        <div class="time-card">
+                            <i class="fas fa-clock"></i>
+                            <div class="time-info-content">
+                                <span class="time-label">Local Time</span>
+                                <span class="time-value" id="local-time">--:--</span>
+                            </div>
+                        </div>
+                        <div class="time-card">
+                            <i class="fas fa-sun"></i>
+                            <div class="time-info-content">
+                                <span class="time-label">Sunrise</span>
+                                <span class="time-value" id="sunrise">--:--</span>
+                            </div>
+                        </div>
+                        <div class="time-card">
+                            <i class="fas fa-moon"></i>
+                            <div class="time-info-content">
+                                <span class="time-label">Sunset</span>
+                                <span class="time-value" id="sunset">--:--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="forecast-section">
+                <h3><i class="fas fa-chart-line"></i> 5-Day Forecast</h3>
+                <div id="forecast" class="forecast-container">
+                    <div class="forecast-placeholder">
+                        <i class="fas fa-cloud-sun-rain"></i>
+                        <p>5-day forecast will appear here</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="historical-section">
+                <h3><i class="fas fa-chart-bar"></i> Temperature Trends</h3>
+                <div id="historical-chart" class="historical-chart">
+                    <div class="chart-placeholder">
+                        <i class="fas fa-chart-line"></i>
+                        <p>Historical comparison data will appear here</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <div id="voice-feedback" class="voice-feedback hidden">
+        <div class="voice-pulse"></div>
+        <i class="fas fa-microphone"></i>
+        <span>Listening...</span>
+    </div>
+
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
 </body>
+
 </html>
